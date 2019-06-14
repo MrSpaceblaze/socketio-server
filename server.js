@@ -1,4 +1,4 @@
-const port = 25515;
+const port = 8988;
 const express = require('express');
 let app = express();
 const http = require('http').Server(app)
@@ -15,15 +15,9 @@ io.on('connection', socket =>{
 	
 	socket.on('getAll',chatId=>{
 		console.log("getAll called")
-		let list = []
-		let limit = messages.count;
 		messages.forEach(message=>{
 			if(message.chat == chatId){
-				list.push(message)
-			}
-			limit--;
-			if(limit==0){
-				socket.emit(chat.chat,list)
+				socket.emit(message.chat,JSON.stringify(message));
 			}
 		})
 	})
@@ -34,6 +28,7 @@ io.on('connection', socket =>{
 		message2.time = Date.now()
 		messages.push(message2);
 		console.log("Message parsed:" + message2.chat )
+		socket.broadcast.emit(message2.chat,JSON.stringify(message2));
 		socket.emit(message2.chat,JSON.stringify(message2));
 	})
 })
